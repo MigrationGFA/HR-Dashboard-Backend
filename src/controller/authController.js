@@ -15,23 +15,15 @@ exports.signUp = async (req, res) => {
       team,
     } = req.body;
 
-    if (!role) {
-      return res.status(400).json({ message: "Role is required." });
+    if (!role || !department || !contractType || !dateOfResumption || !contractEndDate || !team) {
+      return res.status(400).json({ message: "All fields are required required." });
     }
 
-    const imageFile = req.file ? req.file.path : null;
-
-    const normalizedImageFile = imageFile
-      ? imageFile.replace(/\\/g, "/")
-      : null;
-
-    let imageUrl = null;
-    if (normalizedImageFile) {
-      const result = await cloudinary.uploader.upload(normalizedImageFile, {
-        folder: "profile_images",
-        resource_type: "auto",
-      });
-      imageUrl = result.secure_url;
+    if (isNaN(new Date(dateOfResumption))) {
+      return res.status(400).json({ message: "Invalid dateOfResumption format." });
+    }
+    if (isNaN(new Date(contractEndDate))) {
+      return res.status(400).json({ message: "Invalid contractEndDate format." });
     }
 
     const result = await authService.userSignup(
@@ -42,7 +34,6 @@ exports.signUp = async (req, res) => {
       contractEndDate,
       dateOfResumption,
       team,
-      imageUrl,
     );
     res.status(201).json(result);
   } catch (error) {

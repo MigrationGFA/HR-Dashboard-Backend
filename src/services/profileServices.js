@@ -1,11 +1,8 @@
 const Profile = require('../models/Profile');
-const User = require('../models/User');
-const sendEmail = require('../utils/sendEmail');
-const bcrypt = require('bcryptjs');
+const User = require("../models/User")
 
 exports.onBoardUser = async ({
   userId,
-  password,
   fullName,
   dob,
   nextOfKinName,
@@ -13,13 +10,7 @@ exports.onBoardUser = async ({
   address,
   maritalStatus,
   medicalStatus,
-  role,
-  department,
-  contractType,
-  dateOfResumption,
-  contractEndDate,
   reportingOfficer,
-  team,
   imageUrl,
   medicalDescription,
 }) => {
@@ -28,13 +19,10 @@ exports.onBoardUser = async ({
   if (profile) {
     throw new Error("Profile already exists");
   }
-
-  const passwordHash = await bcrypt.hash(password, 10);
   // Create and save the profile
   const userProfile = new Profile({
     userId,
     fullName,
-    passwordHash,
     nextOfKinName,
     phone,
     address,
@@ -43,18 +31,11 @@ exports.onBoardUser = async ({
     dob: new Date(dob),  // 🛠 Convert to Date
     imageUrl,
     reportingOfficer,
-    team,
-    contractEndDate: new Date(contractEndDate),  // 🛠 Convert to Date
-    contractType,
-    role,
-    department,
-    dateOfResumption: new Date(dateOfResumption), 
-    medicalDescription // 🛠 Convert to Date
+    medicalDescription,
   });
-
-
   await userProfile.save();
-  console.log("Saved Profile in DB:", userProfile); 
+  await User.findByIdAndUpdate(userId, { isProfileCreated: true })
+ 
 
   return userProfile;
 };
@@ -66,12 +47,6 @@ exports.updateUserProfile = async (userId, updateFields) => {
     // Ensure at least one field is provided for update
     if (Object.keys(updateFields).length === 0) {
       throw new Error("At least one field must be updated.");
-    }
-
-    // Hash password if provided
-    if (updateFields.password) {
-      const saltRounds = 10;
-      updateFields.password = await bcrypt.hash(updateFields.password, saltRounds);
     }
 
     // Update user in database

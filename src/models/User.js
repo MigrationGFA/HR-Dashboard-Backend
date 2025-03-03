@@ -23,20 +23,16 @@ const userSchema = new mongoose.Schema({
     required: true,
   },
   contractEndDate: {
-    type: String,
+    type: Date,
     required: true,
   },
   dateOfResumption: {
-    type: String,
+    type: Date,
     required: true,
   },
   team: {
     type: String,
     required: true,
-  },
-  imageUrl: {
-    type: String,
-    required: false,
   },
   verifyOtp: {
     type: String,
@@ -46,5 +42,9 @@ const userSchema = new mongoose.Schema({
     type: Date,
     required: false,
   },
+  isProfileCreated: {
+    type: Boolean,
+    default: false
+  }
 });
 module.exports = mongoose.model("gfausers", userSchema);

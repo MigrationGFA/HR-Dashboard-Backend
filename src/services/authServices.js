@@ -5,6 +5,7 @@ const {generateAccessToken, generateRefreshToken, isRefreshTokenValid} = require
 const sendForgotPasswordOTP = require("../utils/forgotPassword");
 const sendResetPasswordAlert = require("../utils/resetOtp");
 const sendWelcomeEmailCreator = require("../utils/welcomeEmail");
+const Profile = require("../models/Profile")
 
 //userSignup
 exports.userSignup = async (
@@ -15,7 +16,7 @@ exports.userSignup = async (
   contractEndDate,
   dateOfResumption,
   team,
-  imageUrl,
+
 ) => {
   const user = await User.findOne({ email });
   if (user) {
@@ -30,10 +31,9 @@ exports.userSignup = async (
     role,
     department,
     contractType,
-    contractEndDate: new Date(contractEndDate),
+    contractEndDate: new Date(contractEndDate),   
     dateOfResumption: new Date(dateOfResumption),
     team,
-    imageUrl,
     password: passwordHash,
   });
 
@@ -48,35 +48,49 @@ exports.userSignup = async (
 };
 
 exports.userLogin = async (email, password) => {
-const user = await User.findOne({email})
-if (!user) {
-  throw new Error("Invalid Credentials")
-}
+  if (!email || !password) {
+    throw new Error("Email and password are required.");
+  }
 
-const validPassword = await bcrypt.compare(password, user.password)
-if (!validPassword) {
-  throw new Error("Invalid Credentials")
-}
- // Generate access token
- const accessToken = generateAccessToken(user._id, user.email);
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw new Error("Invalid Credentials");
+  }
 
- // Generate refresh token
- const refreshToken = generateRefreshToken(user._id, user.email);
+  const validPassword = await bcrypt.compare(password, user.password);
+  if (!validPassword) {
+    throw new Error("Invalid Credentials");
+  }
 
- // Save the refresh token in the database
- user.refreshToken = refreshToken;
- await user.save();
-  // Send login success email
-  const html = `<p>You have successfully logged in to your account.</p>`;
-  await sendEmail({
-    to: email,
-    subject: "Login Successful",
-    html,
-  });
+  // Generate tokens
+  const accessToken = generateAccessToken(user._id, user.email);
+  const refreshToken = generateRefreshToken(user._id, user.email);
 
-  return { message: "Login successful", accessToken, refreshToken };
+  // Save the refresh token in the database
+  user.refreshToken = refreshToken;
+  await user.save();
 
-}
+  if (user.isProfileCreated) {
+    // Fetch the user's profile
+    const userProfile = await Profile.findOne({ userId: user._id });
+
+    // Exclude sensitive fields from the response
+    const { _id, createdAt, updatedAt, userId, ...profileData } = userProfile.toObject();
+    return { 
+      message: "Login successful", 
+      accessToken, 
+      refreshToken, 
+      user: userProfile 
+    };
+  } else {
+    return { 
+      message: "Login successful. Profile not yet created.", 
+      accessToken, 
+      refreshToken 
+    };
+  }
+};
+
 
 exports.ForgotPassword = async (email) => {
 const user = await User.findOne({email})
@@ -86,10 +100,6 @@ if (!user) {
 
 const resetToken = generateAccessToken(user._id, user.email);
 
-// Save the reset token in the database
-user.resetToken = resetToken;
-user.resetTokenExpires = Date.now() + 10 * 60 * 1000; // Token expires in 10 minutes
-await user.save();
 
 // Generate OTP
 const generateOtp = () => Math.floor(100000 + Math.random() * 900000);
@@ -145,12 +155,10 @@ user.resetTokenExpires = Date.now() + 10 * 60 * 1000; // Token expires in 10 min
   user.expiredOtp = Date.now() + 5 * 60 * 1000; // 10 minutes
   await user.save();
 
-  // Send new OTP via email
-  const html = `<p>Your new OTP for verification is: <strong>${otp}</strong></p>`;
-  await sendEmail({
-    to: email,
-    subject: "New OTP for Verification",
-    html,
+  await sendForgotPasswordOTP({
+    username: user.email,
+    email: user.email,
+    otp: user.verifyOtp,
   });
  
 };

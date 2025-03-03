@@ -131,25 +131,9 @@ const sendWelcomeEmailCreator = async ({  email }) => {
         </p>
 
          <p>
-        You are one step closer to having your own free business website.   
+        Complete your profile registration and have access your Profile. 
         </p>
 
-         <p>
-        Complete your profile registration and access your business website with the button below. 
-        </p>
-
-      
-        <div class="click">
-          <a
-            href="https://dimpified.com/creator/signin"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <button>Sign In Now</button>
-          </a>
-        </div>
-        <p class="last">Your journey to business success starts now!</p>
-      </section>
       <footer>
         <div class="wrapper">
           <h3>The DIMP Team</h3>
