@@ -4,16 +4,18 @@ const { connectDB } = require("./src/config/dbConnect.js");
 const app = express();
 const cors = require("cors");
 const corsOptions = require("./src/config/cors.js");
+const authRoutes = require("./src/routes/authRoutes.js");
+const profileRoutes = require("./src/routes/profileRoutes.js");
 const PORT = process.env.PORT || 9090;
 
-app.use(express.urlencoded({ extended: false }));
-
 connectDB();
+app.use(express.json());
 
 app.use(cors(corsOptions));
 
-// build in middleware for json
-app.use(express.json({ limit: "10mb" }));
+app.use("/api/v1", authRoutes);
+app.use("/api/v1", profileRoutes);
+
 
 
 app.listen(PORT, () => {
