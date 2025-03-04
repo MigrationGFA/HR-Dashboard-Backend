@@ -80,13 +80,15 @@ exports.userLogin = async (email, password) => {
       message: "Login successful", 
       accessToken, 
       refreshToken, 
-      user: userProfile 
+      user: userProfile,
+      isProfileCreated: user.isProfileCreated
     };
   } else {
     return { 
       message: "Login successful. Profile not yet created.", 
       accessToken, 
-      refreshToken 
+      refreshToken,
+      isProfileCreated: user.isProfileCreated, 
     };
   }
 };
@@ -97,9 +99,9 @@ const user = await User.findOne({email})
 if (!user) {
   throw new Error("User not found")
 }
-
-const resetToken = generateAccessToken(user._id, user.email);
-
+if (!email) {
+  throw new Error("Email is required" );
+}
 
 // Generate OTP
 const generateOtp = () => Math.floor(100000 + Math.random() * 900000);
@@ -113,7 +115,6 @@ await sendForgotPasswordOTP({
     email: user.email,
     otp: user.verifyOtp,
 });
-return resetToken;
 };
 
 exports.resetPassword = async (email, verifyOtp, password) => {
@@ -122,8 +123,13 @@ exports.resetPassword = async (email, verifyOtp, password) => {
     throw new Error("Invalid or expired OTP");
   }
 
+  if (!email) {
+    throw new Error("Email is required" );
+  }
+  
+
   // Hash new password
-  const hashedPassword = await bcrypt.hash(password, 12);
+  const hashedPassword = await bcrypt.hash(password, 10);
   user.password = hashedPassword;
   user.verificationOtp = null;
   user.otpExpired = null;
@@ -142,11 +148,9 @@ exports.resendOtp = async (email) => {
     throw new Error("User not found");
   }
 
-  const resetToken = generateAccessToken(user._id, user.email);
-
-// Save the reset token in the database
-user.resetToken = resetToken;
-user.resetTokenExpires = Date.now() + 10 * 60 * 1000; // Token expires in 10 minutes
+  if (!email) {
+    throw new Error("Email is required" );
+  }
 
   // Generate new OTP
   const generateOtp = () => Math.floor(100000 + Math.random() * 900000);
@@ -160,5 +164,5 @@ user.resetTokenExpires = Date.now() + 10 * 60 * 1000; // Token expires in 10 min
     email: user.email,
     otp: user.verifyOtp,
   });
- 
+
 };
