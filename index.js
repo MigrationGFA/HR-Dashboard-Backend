@@ -6,6 +6,7 @@ const cors = require("cors");
 const corsOptions = require("./src/config/cors.js");
 const authRoutes = require("./src/routes/authRoutes.js");
 const profileRoutes = require("./src/routes/profileRoutes.js");
+const leaveRoutes = require("./src/routes/leaveRoutes.js")
 const PORT = process.env.PORT || 9090;
 
 connectDB();
@@ -15,6 +16,7 @@ app.use(cors(corsOptions));
 
 app.use("/api/v1", authRoutes);
 app.use("/api/v1", profileRoutes);
+app.use("/api/v1", leaveRoutes);
 
 
 

@@ -5,35 +5,6 @@ const cloudinary = require("../utils/cloudinary");
 // Onboarding
 exports.onboarding = async (req, res) => {
   try {
-    const cleanedBody = Object.keys(req.body).reduce((acc, key) => {
-      acc[key.trim()] = req.body[key];
-      return acc;
-    }, {});
-
-    const {
-      userId,
-      fullName,
-      dob,
-      nextOfKinName,
-      phone,
-      address,
-      maritalStatus,
-      medicalStatus,
-      reportingOfficer,
-      medicalDescription
-    } = cleanedBody;
-
-    if (!mongoose.Types.ObjectId.isValid(userId)) {
-      return res.status(400).json({ message: "Invalid userId format." });
-    }
-    if (!mongoose.Types.ObjectId.isValid(reportingOfficer)) {
-      return res.status(400).json({ message: "Invalid reportingOfficer format." });
-    }
-
-    if (isNaN(new Date(dob))) {
-      return res.status(400).json({ message: "Invalid DOB format." });
-    }
-
     let imageUrl = null;
     if (req.file) {
       const normalizedImageFile = req.file.path.replace(/\\/g, "/");
@@ -44,19 +15,7 @@ exports.onboarding = async (req, res) => {
       imageUrl = result.secure_url;
     }
 
-    const result = await profileService.onBoardUser({
-      userId,
-      fullName,
-      dob: new Date(dob),
-      nextOfKinName,
-      phone,
-      address,
-      maritalStatus,
-      medicalStatus,
-      reportingOfficer,
-      imageUrl,
-      medicalDescription
-    });
+    const result = await profileService.onBoardUser(req.body);
 
     res.status(200).json(result);
   } catch (error) {

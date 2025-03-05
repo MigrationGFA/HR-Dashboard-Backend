@@ -1,7 +1,8 @@
 const Profile = require('../models/Profile');
 const User = require("../models/User")
 
-exports.onBoardUser = async ({
+exports.onBoardUser = async (body) => {
+  const {
   userId,
   fullName,
   dob,
@@ -13,12 +14,25 @@ exports.onBoardUser = async ({
   reportingOfficer,
   imageUrl,
   medicalDescription,
-}) => {
+} = body
   // Check if profile already exists
   const profile = await Profile.findOne({ userId });
   if (profile) {
     throw new Error("Profile already exists");
   }
+
+  
+      if (!mongoose.Types.ObjectId.isValid(userId)) {
+        return res.status(400).json({ message: "Invalid userId format." });
+      }
+      if (!mongoose.Types.ObjectId.isValid(reportingOfficer)) {
+        return res.status(400).json({ message: "Invalid reportingOfficer format." });
+      }
+  
+      if (isNaN(new Date(dob))) {
+        return res.status(400).json({ message: "Invalid DOB format." });
+      }
+  
   // Create and save the profile
   const userProfile = new Profile({
     userId,
