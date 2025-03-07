@@ -1,4 +1,4 @@
-const anonymousController = require("../controller/anonymousController")
+const anonymousController = require("../controller/anonymouscontroller")
 const authMiddleware = require("../middlewares/authentication")
 
 const express = require("express")

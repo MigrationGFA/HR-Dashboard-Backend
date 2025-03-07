@@ -7,8 +7,8 @@ const corsOptions = require("./src/config/cors.js");
 const authRoutes = require("./src/routes/authRoutes.js");
 const profileRoutes = require("./src/routes/profileRoutes.js");
 const leaveRoutes = require("./src/routes/leaveRoutes.js");
-const taskRoutes = require("./src/routes/taskRoutes")
-const anonymousSuggestionRoutes = require("./src/routes/anonymous.js")
+const taskRoutes = require("./src/routes/taskroutes.js");
+const anonymousSuggestionRoutes = require("./src/routes/anonymousroutes.js")
 const PORT = process.env.PORT || 9090;
 
 connectDB();
