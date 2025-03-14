@@ -43,11 +43,10 @@ const authenticatedUser = async (req, res, next) => {
         }
 
         // Generate a new access token
-        const newAccessToken = generateAccessToken(
-          existingToken.user._id,
-          existingToken.user.email,
-          existingToken.user.role
-        );
+        const newAccessToken = generateAccessToken(user._id, user.role);
+
+        // Attach the user payload to req.user
+        req.user = { id: user._id, role: user.role };
 
         // Send response with new tokens
         res.status(200).json({
@@ -72,4 +71,22 @@ const authenticatedUser = async (req, res, next) => {
   }
 };
 
-module.exports = authenticatedUser;
+
+// middleware/hrAuthentication.js
+const hrAuthentication = (req, res, next) => {
+
+  if (!req.user || !req.user.role) {
+    return res.status(403).json({ message: "Access denied. User not authenticated." });
+  }
+
+  if (req.user.role === "HR") {
+    next();
+  } else {
+    res.status(403).json({ message: "Access denied. You do not have the required role (HR)." });
+  }
+};
+
+module.exports = {
+  authenticatedUser,
+  hrAuthentication
+};

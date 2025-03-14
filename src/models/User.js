@@ -45,6 +45,10 @@ const userSchema = new mongoose.Schema({
   isProfileCreated: {
     type: Boolean,
     default: false
-  }
+  },
+  profile: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: "Profile" 
+  },
 });
 module.exports = mongoose.model("gfausers", userSchema);

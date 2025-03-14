@@ -1,39 +1,11 @@
 const profileService = require("../services/profileServices");
 const mongoose = require("mongoose");
 const cloudinary = require("../utils/cloudinary");
+const Profile = require("../models/Profile");
 
 // Onboarding
 exports.onboarding = async (req, res) => {
   try {
-    const cleanedBody = Object.keys(req.body).reduce((acc, key) => {
-      acc[key.trim()] = req.body[key];
-      return acc;
-    }, {});
-
-    const {
-      userId,
-      fullName,
-      dob,
-      nextOfKinName,
-      phone,
-      address,
-      maritalStatus,
-      medicalStatus,
-      reportingOfficer,
-      medicalDescription
-    } = cleanedBody;
-
-    if (!mongoose.Types.ObjectId.isValid(userId)) {
-      return res.status(400).json({ message: "Invalid userId format." });
-    }
-    if (!mongoose.Types.ObjectId.isValid(reportingOfficer)) {
-      return res.status(400).json({ message: "Invalid reportingOfficer format." });
-    }
-
-    if (isNaN(new Date(dob))) {
-      return res.status(400).json({ message: "Invalid DOB format." });
-    }
-
     let imageUrl = null;
     if (req.file) {
       const normalizedImageFile = req.file.path.replace(/\\/g, "/");
@@ -44,19 +16,7 @@ exports.onboarding = async (req, res) => {
       imageUrl = result.secure_url;
     }
 
-    const result = await profileService.onBoardUser({
-      userId,
-      fullName,
-      dob: new Date(dob),
-      nextOfKinName,
-      phone,
-      address,
-      maritalStatus,
-      medicalStatus,
-      reportingOfficer,
-      imageUrl,
-      medicalDescription
-    });
+    const result = await profileService.onBoardUser(req.body);
 
     res.status(200).json(result);
   } catch (error) {
@@ -110,5 +70,15 @@ exports.updateProfile = async (req, res) => {
       .json({ message: "Profile updated successfully", user: updatedUser });
   } catch (error) {
     res.status(400).json({ message: error.message });
+  }
+};
+
+exports.getAllStaff = async (req, res) => {
+  try {
+    const users = await Profile.find().populate("User");
+    res.status(200).json({ users });
+  } catch (error) {
+    console.log("Error:", error);
+    res.status(500).json({ message: "Error fetching staff information", error });
   }
 };
