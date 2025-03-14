@@ -1,13 +1,13 @@
 const anonymousController = require("../controller/anonymouscontroller")
-const authMiddleware = require("../middlewares/authentication")
+const {authenticatedUser} = require("../middlewares/authentication")
 
 const express = require("express")
 const router = express.Router()
 
 
-router.get('/suggestion/:department',authMiddleware, anonymousController.AnonymousSuggestionByDepartment);
-router.post("/anonymous-suggestion", authMiddleware, anonymousController.anonymousSuggestion);
-router.patch("/suggestion/:id", authMiddleware, anonymousController.ResponseMessage )
-router.get('/suggestion',authMiddleware, anonymousController.getAllSuggestion);
+router.get('/suggestion/:department',authenticatedUser, anonymousController.AnonymousSuggestionByDepartment);
+router.post("/anonymous-suggestion", authenticatedUser, anonymousController.anonymousSuggestion);
+router.patch("/suggestion/:id", authenticatedUser, anonymousController.ResponseMessage )
+router.get('/suggestion',authenticatedUser, anonymousController.getAllSuggestion);
 
 module.exports = router

@@ -38,4 +38,3 @@ exports.responseMessage = async (body, params) => {
   return suggestion;
 
 }
-

@@ -1,6 +1,7 @@
 const profileService = require("../services/profileServices");
 const mongoose = require("mongoose");
 const cloudinary = require("../utils/cloudinary");
+const Profile = require("../models/Profile");
 
 // Onboarding
 exports.onboarding = async (req, res) => {
@@ -69,5 +70,15 @@ exports.updateProfile = async (req, res) => {
       .json({ message: "Profile updated successfully", user: updatedUser });
   } catch (error) {
     res.status(400).json({ message: error.message });
+  }
+};
+
+exports.getAllStaff = async (req, res) => {
+  try {
+    const users = await Profile.find().populate("User");
+    res.status(200).json({ users });
+  } catch (error) {
+    console.log("Error:", error);
+    res.status(500).json({ message: "Error fetching staff information", error });
   }
 };

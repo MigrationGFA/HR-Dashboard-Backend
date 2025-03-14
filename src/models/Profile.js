@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const User = require("./User");
 
 const profileSchema = new mongoose.Schema({
   userId: {
@@ -20,7 +21,8 @@ const profileSchema = new mongoose.Schema({
   },
   
   imageUrl: { type: String, required: false },
-  medicalDescription : {type: String, required: false}
+  medicalDescription : {type: String, required: false},
+  User: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 });
 
 module.exports = mongoose.model("gfaProfile", profileSchema);

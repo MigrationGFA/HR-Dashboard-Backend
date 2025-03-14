@@ -1,4 +1,4 @@
-const anonymousServices = require("../services/anonymousServices")
+const anonymousServices = require("../services/anonymousService")
 const Anonymous = require("../models/Anonymous")
 
 exports.anonymousSuggestion = async (req, res) => {

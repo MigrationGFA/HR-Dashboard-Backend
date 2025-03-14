@@ -20,5 +20,4 @@ const anonymousSuggestionSchema = new mongoose.Schema({
 });
 
 const AnonymousSuggestion = mongoose.model('gfaAnonymousSuggestion', anonymousSuggestionSchema);
-
 module.exports = AnonymousSuggestion;

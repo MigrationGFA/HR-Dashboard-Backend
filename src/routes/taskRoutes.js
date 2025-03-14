@@ -1,12 +1,12 @@
 const taskController = require("../controller/taskController")
-const authMiddleware = require("../middlewares/authentication")
+const {authenticatedUser} = require("../middlewares/authentication")
 
 const express = require("express")
 const router = express.Router()
 
-router.post("/task", authMiddleware, taskController.TaskServices)
-router.get("/task/:department", authMiddleware, taskController.getTaskByDepartment)
-router.get("/task/:team", authMiddleware, taskController.getTaskByTeam)
-router.get("/task/:userId", authMiddleware, taskController.getTaskByUser)
+router.post("/task", authenticatedUser, taskController.TaskServices)
+router.get("/task/:department", authenticatedUser, taskController.getTaskByDepartment)
+router.get("/task/:team", authenticatedUser, taskController.getTaskByTeam)
+router.get("/task/:userId", authenticatedUser, taskController.getTaskByUser)
 
 module.exports = router
