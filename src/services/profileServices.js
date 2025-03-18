@@ -16,7 +16,32 @@ exports.onBoardUser = async (body) => {
   imageUrl,
   medicalDescription,
 } = body
-  // Check if profile already exists
+
+const requiredFields = [
+  'userId',
+  'fullName',
+  'dob',
+  'nextOfKinName',
+  'phone',  
+  'address',
+  'maritalStatus',
+  'medicalStatus',
+  'reportingOfficer',
+  'imageUrl',
+  'medicalDescription',
+  ];
+  
+  // Check for missing fields
+  for (const field of requiredFields) {
+  if (!body[field]) {
+  return { status: 400, data: { message: `${field} is required` } };
+  }
+}
+const supportTicket = await helpCenter.findOne({userId})
+if(supportTicket) {
+  return {error: 'Support ticket already exists'}
+}
+  
   const profile = await Profile.findOne({ userId });
   if (profile) {
     throw new Error("Profile already exists");

@@ -3,6 +3,27 @@ const leaveRequest = require("../models/leaveRequest");
 exports.LeaveRequest = async (body) => {
   const { userId, type, from, to, shortDescription, reportingOfficerId } = body;
 
+   const requiredFields = [
+      'userId',
+      'type',
+      'from',
+      'shortDescription',
+      'reportingOfficerId',
+      'to'
+      ];
+      
+      // Check for missing fields
+      for (const field of requiredFields) {
+      if (!body[field]) {
+      return { status: 400, data: { message: `${field} is required` } };
+      }
+    }
+    const supportTicket = await helpCenter.findOne({userId})
+    if(supportTicket) {
+      return {error: 'Support ticket already exists'}
+    }
+      
+
   const leave = await leaveRequest.findOne({ userId });
   if (leave) {
     throw new Error("LeaveRequest Already exist");
