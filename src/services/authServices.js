@@ -63,8 +63,8 @@ exports.userLogin = async (email, password) => {
   }
 
   // Generate tokens
-  const accessToken = generateAccessToken(user._id, user.email);
-  const refreshToken = generateRefreshToken(user._id, user.email);
+  const accessToken = generateAccessToken(user._id, user.role);
+  const refreshToken = generateRefreshToken(user._id, user.role);
 
   // Save the refresh token in the database
   user.refreshToken = refreshToken;
